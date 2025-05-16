@@ -1,44 +1,5 @@
 
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -417,20 +378,23 @@
                 messages: [
                     { 
                         role: "system", 
-                        content: "You are a math question generator specializing in DSE curriculum questions. Users will provide one or more reference questions with specified difficulties, and you must generate a new question, its answer, and a guiding question for each based on the given difficulty. Requirements:\n" +
+                        content: "You are a math question generator specializing in DSE curriculum questions. Users will provide one or more reference questions with specified difficulties, and you must generate a new question, its answer with detailed steps, and a guiding question for each based on the given difficulty. Requirements:\n" +
                                  "1. Identify the category of each reference question: algebra, geometry, or calculus.\n" +
                                  "2. Generate a new question for each reference question that:\n" +
                                  "   - Belongs to the same category.\n" +
                                  "   - Is based on the same mathematical concept.\n" +
                                  "   - Adjusts the question type based on the specified difficulty.\n" +
                                  "3. For each new question, also provide:\n" +
-                                 "   - The correct answer.\n" +
+                                 "   - The correct answer, including a detailed step-by-step solution. Show the calculation process or reasoning clearly, using multiple lines if necessary.\n" +
                                  "   - A guiding question in English that helps students understand the direction of the problem.\n" +
-                                 "4. Format each set (new question, answer, guiding question) as a single LaTeX block using \\begin{align*} with labels 'Question:', 'Answer:', and 'Guiding Question:', enclosed in \\[ ... \\]. For example:\n" +
+                                 "4. Format each set (new question, answer with steps, guiding question) as a single LaTeX block using \\begin{align*} with labels 'Question:', 'Answer:', and 'Guiding Question:', enclosed in \\[ ... \\]. The 'Answer:' part may include multiple lines to show the steps or reasoning. For example:\n" +
                                  "\\[\n" +
                                  "\\begin{align*}\n" +
                                  "\\text{Question:} & \\quad \\text{[Your question here]} \\\\\n" +
-                                 "\\text{Answer:} & \\quad \\text{[Your answer here]} \\\\\n" +
+                                 "\\text{Answer:} & \\quad \\text{[First step or reasoning]} \\\\\n" +
+                                 " & \\quad \\text{[Second step or reasoning]} \\\\\n" +
+                                 " & \\quad \\vdots \\\\\n" +
+                                 " & \\quad \\text{[Final answer or conclusion]} \\\\\n" +
                                  "\\text{Guiding Question:} & \\quad \\text{[Your guiding question here]}\n" +
                                  "\\end{align*}\n" +
                                  "\\]\n" +
@@ -439,7 +403,7 @@
                     },
                     { 
                         role: "user", 
-                        content: `Below are the reference questions with their specified difficulties:\n\n${promptContent}\n\nFor each reference question, generate a new question, its answer, and a guiding question according to the specified difficulty. Format each set as specified in the system instructions.`
+                        content: `Below are the reference questions with their specified difficulties:\n\n${promptContent}\n\nFor each reference question, generate a new question, its answer with detailed steps, and a guiding question according to the specified difficulty. Format each set as specified in the system instructions.`
                     }
                 ]
             };
