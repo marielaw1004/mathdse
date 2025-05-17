@@ -1,4 +1,5 @@
 
+
 <script type="text/javascript">
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
@@ -361,13 +362,13 @@
                 let difficultyInstruction;
                 switch (item.difficulty) {
                     case '容易':
-                        difficultyInstruction = "Generate a new question that only changes the numerical values but keeps the same mathematical concept.";
+                        difficultyInstruction = `Generate a new question of the same type (multiple-choice, short, or long) that only changes the numerical values but keeps the same mathematical concept.`;
                         break;
                     case '普通':
-                        difficultyInstruction = "Generate a new question, its answer, and a guiding question. The new question must be based on the same mathematical concept, have content, context, and structure that are 100% different from the reference question, not merely changing numbers, and demonstrate creativity by altering the question structure or application scenario. Additionally, the question must assess other related concepts. Format each set as specified in the system instructions.";
+                        difficultyInstruction = `Generate a new question of the same type (multiple-choice, short, or long), its answer, and a guiding question. The new question must be based on the same mathematical concept, have content, context, and structure that are 100% different from the reference question, not merely changing numbers, and demonstrate creativity by altering the question structure or application scenario. Additionally, the question must assess other related concepts. Format each set as specified in the system instructions.`;
                         break;
                     case '困難':
-                        difficultyInstruction = "Generate a new question that is based on the same mathematical concept but is more challenging, focusing on argumentation rather than calculation. The question should require students to evaluate a claim (AGREE or DISAGREE) and provide reasoning.";
+                        difficultyInstruction = `Generate a new question of the same type (multiple-choice, short, or long) that is based on the same mathematical concept but is more challenging. The question should have content, context, and structure that are 100% different from the reference question, which must assess previously learned concepts or integrating different topics. The questions can include multi-step problems that require special strategies to do it faster. The questions can also focus on argumentation rather than calculation. The questions can require students to evaluate a claim (AGREE or DISAGREE) and provide reasoning.`;
                         break;
                 }
                 return `Reference Question ${index + 1} (Difficulty: ${item.difficulty}):\n${item.question}\n\n${difficultyInstruction}`;
@@ -378,16 +379,18 @@
                 messages: [
                     { 
                         role: "system", 
-                        content: "You are a math question generator specializing in DSE curriculum questions. Users will provide one or more reference questions with specified difficulties, and you must generate a new question, its answer with detailed steps, and a guiding question for each based on the given difficulty. Requirements:\n" +
+                        content: "You are a math question generator specializing in DSE curriculum questions. Users will provide one or more reference questions with specified difficulties, and you must identify the question type (multiple-choice, short, or long) from each reference question and generate a new question of the same type, its answer with detailed steps, and a guiding question based on the given difficulty. Requirements:\n" +
                             "1. Identify the category of each reference question: algebra, geometry, or calculus.\n" +
-                            "2. Generate a new question for each reference question that:\n" +
+                            "2. Identify the question type (multiple-choice, short, or long) from the reference question.\n" +
+                            "3. Generate a new question for each reference question that:\n" +
                             "   - Belongs to the same category.\n" +
                             "   - Is based on the same mathematical concept.\n" +
-                            "   - Adjusts the question type based on the specified difficulty.\n" +
-                            "3. For each new question, also provide:\n" +
+                            "   - Is of the same type (multiple-choice, short, or long) as the reference question.\n" +
+                            "   - Adjusts the question based on the specified difficulty.\n" +
+                            "4. For each new question, also provide:\n" +
                             "   - The correct answer, including a detailed step-by-step solution. Show the calculation process or reasoning clearly, using multiple lines if necessary.\n" +
                             "   - A guiding question in English that helps students understand the direction of the problem. The guiding question must include relevant formulas or properties based on the question’s content and provide a step-by-step approach to solving the problem without giving away the answer.\n" +
-                            "4. Format each set (new question, answer with steps, guiding question) as a single LaTeX block using \\begin{align*} with labels 'Question:', 'Answer:', and 'Guiding Question:', enclosed in \\[ ... \\]. The 'Answer:' part may include multiple lines to show the steps or reasoning. For example:\n" +
+                            "5. Format each set (new question, answer with steps, guiding question) as a single LaTeX block using \\begin{align*} with labels 'Question:', 'Answer:', and 'Guiding Question:', enclosed in \\[ ... \\]. The 'Answer:' part may include multiple lines to show the steps or reasoning. For example:\n" +
                             "\\[\n" +
                             "\\begin{align*}\n" +
                             "\\text{Question:} & \\quad \\text{[Your question here]} \\\\\n" +
@@ -398,12 +401,12 @@
                             "\\text{Guiding Question:} & \\quad \\text{[Your guiding question here, including relevant formulas or properties and a step-by-step approach]}\n" +
                             "\\end{align*}\n" +
                             "\\]\n" +
-                            "5. Ensure the output contains only LaTeX content with no non-LaTeX text outside the \\[ ... \\] blocks. All text, including the guiding question, should be within \\text{} commands inside the LaTeX blocks.\n" +
-                            "6. Respond in English."
+                            "6. Ensure the output contains only LaTeX content with no non-LaTeX text outside the \\[ ... \\] blocks. All text, including the guiding question, should be within \\text{} commands inside the LaTeX blocks.\n" +
+                            "7. Respond in English."
                     },
                     { 
                         role: "user", 
-                        content: `Below are the reference questions with their specified difficulties:\n\n${promptContent}\n\nFor each reference question, generate a new question, its answer with detailed steps, and a guiding question according to the specified difficulty. Format each set as specified in the system instructions.`
+                        content: `Below are the reference questions with their specified difficulties:\n\n${promptContent}\n\nFor each reference question, identify its type (multiple-choice, short, or long), generate a new question of the same type, its answer with detailed steps, and a guiding question according to the specified difficulty. Format each set as specified in the system instructions.`
                     }
                 ]
             };
@@ -481,7 +484,7 @@
     </script>
     
     <footer class="copyright-footer">
-        <p>Copyright © 2025 陳冠健、黃子謙、羅伊汶. All rights reserved.</p>
+        <p>Copyright © 2025 羅伊汶、陳冠健、黃子謙. All rights reserved.</p>
     </footer>
 </body>
 </html>
